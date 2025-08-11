@@ -48,6 +48,8 @@ public with sharing class DummyJSONCallout {
 		HttpResponse response = http.send(request);
 		if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
 			system.debug(response.getBody());
+			Contact cont = createContactFromJson(response.getBody());
+		    upsert cont DummyJSON_Id__c;
 			//String jsonResponse = JSON.serialize(response.getBody());
 			//system.debug(jsonResponse);
 			//createContactFromJson(jsonResponse);
@@ -55,8 +57,7 @@ public with sharing class DummyJSONCallout {
 			system.debug(response.getStatusCode());
 		}
 		//String jsonResponse = JSON.serialize(response.getBody());
-		Contact cont = createContactFromJson(response.getBody());
-		upsert cont DummyJSON_Id__c; //insert/update from the JSON response using the external id (dummyUserId)
+		 //insert/update from the JSON response using the external id (dummyUserId)
 		} catch (Exception e) {
 			system.debug('Callout failed: ' + e.getMessage());
 		}
