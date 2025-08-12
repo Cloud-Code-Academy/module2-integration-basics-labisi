@@ -82,38 +82,28 @@ public with sharing class DummyJSONCallout {
      */
 	@TestVisible // Allows test class to see this method. Since it is private, it would not be visible otherwise.
 	private static Contact createContactFromJson(String jsonResponse) {
+		 Contact cont = new Contact();
 		// Deserialize the JSON string into map of primitive data types.
             Map<String,Object> jsonResponseMap = (Map<String,Object>)JSON.deserializeUntyped(jsonResponse);
-			Integer jsonId = (Integer)jsonResponseMap.get('id');
-			String firstName = (string)jsonResponseMap.get('firstName');
-			String lastName = (string)jsonResponseMap.get('lastName');
-			String email = (string)jsonResponseMap.get('email');
-			String phone = (string)jsonResponseMap.get('phone');
-			String birthdate = (string)jsonResponseMap.get('birthDate');
-			system.debug(firstName);
+			cont.DummyJSON_Id__c = String.valueOf(jsonResponseMap.get('id'));
+			cont.FirstName = (string)jsonResponseMap.get('firstName');
+			cont.LastName = (string)jsonResponseMap.get('lastName');
+			cont.Email = (string)jsonResponseMap.get('email');
+			cont.Phone = (string)jsonResponseMap.get('phone');
+			cont.Birthdate = Date.valueOf((string)jsonResponseMap.get('birthDate'));
+			
 		// Create a new contact from the JSON response.
-            Contact cont = new Contact();
+           
 		// Set the contact fields from the JSON response.
-            cont.LastName = lastName; 
-			cont.DummyJSON_Id__c = jsonId.toString(); 
-			cont.FirstName = firstName; 
-			cont.Email = email; 
-			cont.Phone = phone; 
-			cont.Birthdate = date.parse(birthdate);
+           
 		// Deserialize the address from the JSON response.
             Map<String,Object> addressMap = (Map<String,Object>)jsonResponseMap.get('address');
-            String address = (String)addressMap.get('address');
-			String city = (String)addressMap.get('city');	
-			String state = (String)addressMap.get('state');	
-			String postalcode = (String)addressMap.get('postalCode');
-            String country = (String)addressMap.get('country');
+             cont.MailingStreet = (String)addressMap.get('address');
+			 cont.MailingCity = (String)addressMap.get('city');	
+			 cont.MailingState = (String)addressMap.get('state');	
+			 cont.MailingPostalCode = (String)addressMap.get('postalCode');
+             cont.MailingCountry = (String)addressMap.get('country');
 		// Set the address fields on the contact.
-		    cont.MailingStreet = address;
-			cont.MailingCity = city;
-			cont.MailingState = state;
-			cont.MailingPostalCode = postalcode;
-			cont.MailingCountry = country;
-        system.debug(cont);
 		return cont;
 		
 	}
