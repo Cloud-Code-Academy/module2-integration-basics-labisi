@@ -47,19 +47,21 @@ public with sharing class DummyJSONCallout {
 		request.setMethod('GET');
 		HttpResponse response = http.send(request);
 		if (response.getStatusCode() >= 200 && response.getStatusCode() < 300) {
-			system.debug(response.getBody());
+			//system.debug(response.getBody());
 			Contact cont = createContactFromJson(response.getBody());
 		    upsert cont DummyJSON_Id__c;
 			//String jsonResponse = JSON.serialize(response.getBody());
 			//system.debug(jsonResponse);
 			//createContactFromJson(jsonResponse);
 		} else {
-			system.debug(response.getStatusCode());
+			DummyJSONError error = (DummyJSONError) JSON.deserialize(response.getBody(), DummyJSONError.class);
+			throw new DummyJSONException(error.Status);
+			//system.debug(response.getStatusCode());
 		}
 		//String jsonResponse = JSON.serialize(response.getBody());
 		 //insert/update from the JSON response using the external id (dummyUserId)
 		} catch (Exception e) {
-			system.debug('Callout failed: ' + e.getMessage());
+			//throw new DummyJSONException('Callout failed: ' + e.getMessage());
 		}
 		}
 		
@@ -143,10 +145,12 @@ public with sharing class DummyJSONCallout {
 			//c.DummyJSON_Last_Updated__c = System.now();
 			update c;
 		 } else{
-			system.debug(response.getStatusCode() + ': ' + response.getBody());
+			DummyJSONError error = (DummyJSONError) JSON.deserialize(response.getBody(), DummyJSONError.class);
+			throw new DummyJSONException(error.Status);
+			//system.debug(response.getStatusCode() + ': ' + response.getBody());
 		 }
 		} catch (Exception e) {
-			system.debug('Callout Failed: ' + e.getMessage());
+			throw new DummyJSONException('Callout Failed: ' + e.getMessage());
 		}
 		
 	}
@@ -186,4 +190,11 @@ public with sharing class DummyJSONCallout {
 
 		return JSON.serialize(contactPayload);
 	}
+
+	public class DummyJSONError{
+		public String Status;
+		public String StatusCode;
+	}
+
+	public class DummyJSONException extends Exception{}
 }
